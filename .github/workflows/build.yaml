@@ -1,0 +1,38 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - test
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run prepublishOnly
+
+      - name: Push to build branch
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git checkout --orphan build
+          git rm --cached package.json
+          git rm -rf .
+          git add -f dist
+          git add -f package.json
+          git commit -m "Build for ${{ github.ref_type }} ${{ github.ref_name }}: ${{ github.sha }}"
+          git push -f origin build
+

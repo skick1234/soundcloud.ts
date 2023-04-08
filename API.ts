@@ -7,7 +7,8 @@ const webURL = "https://soundcloud.com"
 setGlobalDispatcher(new Agent({pipelining: 50}))
 
 export default class API {
-  public static headers = {
+  public static headers: { [key: string]: string } = {
+    "referer": "soundcloud.com",
     "user-agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
   }
@@ -17,6 +18,11 @@ export default class API {
   public proxy?: Pool
   constructor(public clientID?: string, public oauthToken?: string, proxy?: string) {
     if (proxy) this.proxy = new Pool(proxy)
+    if (oauthToken) API.headers.Authorization = `OAuth ${oauthToken}`
+  }
+
+  public get headers() {
+    return API.headers
   }
 
   /**

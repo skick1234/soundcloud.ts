@@ -70,13 +70,12 @@ export class Playlists {
      * Searches for playlists (web scraping)
      */
     public searchAlt = async (query: string) => {
-        const headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"}
-        const html = await request(`https://soundcloud.com/search/sets?q=${query}`, {headers}).then((r) => r.body.text())
+        const html = await request(`https://soundcloud.com/search/sets?q=${query}`, {headers: this.api.headers}).then((r) => r.body.text())
         const urls = html.match(/(?<=<li><h2><a href=")(.*?)(?=">)/gm)?.map((u: any) => `https://soundcloud.com${u}`)
         if (!urls) return []
         const scrape: any = []
         for (let i = 0; i < urls.length; i++) {
-            const songHTML = await request(urls[i], {headers}).then((r) => r.body.text())
+            const songHTML = await request(urls[i], {headers: this.api.headers}).then((r) => r.body.text())
             const json = JSON.parse(songHTML.match(/(\[{)(.*)(?=;)/gm)[0])
             const playlist = json[json.length - 1].data
             scrape.push(playlist)
@@ -89,8 +88,7 @@ export class Playlists {
      */
     public getAlt = async (url: string) => {
         if (!url.startsWith("https://soundcloud.com/")) url = `https://soundcloud.com/${url}`
-        const headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"}
-        const songHTML = await request(url, {headers}).then((r: any) => r.body.text())
+        const songHTML = await request(url, {headers: this.api.headers}).then((r: any) => r.body.text())
         const json = JSON.parse(songHTML.match(/(\[{)(.*)(?=;)/gm)[0])
         const playlist = json[json.length - 1].data
         return this.fetch(playlist) as Promise<SoundcloudPlaylistV2>

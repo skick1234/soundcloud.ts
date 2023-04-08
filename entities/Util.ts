@@ -25,11 +25,7 @@ export class Util {
    * Gets the direct streaming link of a track.
    */
   public streamLink = async (songUrl: string) => {
-    const headers = {
-      "referer": "soundcloud.com",
-      "user-agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
-    }
+    const headers = this.api.headers
     if (songUrl.includes("m.soundcloud.com")) songUrl = songUrl.replace("m.soundcloud.com", "soundcloud.com")
     if (!songUrl.includes("soundcloud.com")) songUrl = `https://soundcloud.com/${songUrl}`
     const html = await makeRequest(songUrl, {headers}).then((r) => r.text())
@@ -65,11 +61,7 @@ export class Util {
    * Readable stream of m3u playlists.
    */
   private readonly m3uReadableStream = async (songUrl: string): Promise<NodeJS.ReadableStream> => {
-    const headers = {
-      "referer": "soundcloud.com",
-      "user-agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
-    }
+    const headers = this.api.headers
     if (songUrl.includes("m.soundcloud.com")) songUrl = songUrl.replace("m.soundcloud.com", "soundcloud.com")
     if (!songUrl.includes("soundcloud.com")) songUrl = `https://soundcloud.com/${songUrl}`
     const html = await makeRequest(songUrl, {headers}).then((r) => r.text())
@@ -109,14 +101,9 @@ export class Util {
    * Downloads the mp3 stream of a track as readable stream.
    */
   private readonly downloadTrackReadableStream = async (songUrl: string): Promise<NodeJS.ReadableStream> => {
-    const headers = {
-      "referer": "soundcloud.com",
-      "user-agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
-    }
     const url = await this.streamLink(songUrl)
     if (!url) return this.m3uReadableStream(songUrl)
-    const readable = await makeRequest(url, {headers})
+    const readable = await makeRequest(url, {headers: this.api.headers})
     return readable
   }
 
@@ -140,12 +127,7 @@ export class Util {
    * Gets a track title from the page
    */
   public getTitle = async (songUrl: string) => {
-    const headers = {
-      "referer": "soundcloud.com",
-      "user-agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
-    }
-    const html = await makeRequest(songUrl, {headers}).then((r) => r.text())
+    const html = await makeRequest(songUrl, {headers: this.api.headers}).then((r) => r.text())
     const title = html.match(/(?<="og:title" content=")(.*?)(?=")/)?.[0]?.replace(/\//g, "")
     return title
   }

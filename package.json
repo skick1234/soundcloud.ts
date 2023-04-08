@@ -26,17 +26,17 @@
   "devDependencies": {
     "@tenpi/tslint": "^1.1.0",
     "@tenpi/typedoc": "0.0.3",
-    "@types/chai": "^4.2.18",
-    "@types/mocha": "^8.2.2",
-    "@types/node": "^15.3.0",
-    "chai": "^4.3.4",
-    "dotenv": "^9.0.2",
-    "mocha": "^8.4.0",
-    "typedoc": "^0.20.36",
-    "typescript": "^4.2.4"
+    "@types/chai": "^4.3.4",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.15.11",
+    "chai": "^4.3.7",
+    "dotenv": "^16.0.3",
+    "mocha": "^10.2.0",
+    "typedoc": "^0.23.28",
+    "typescript": "^5.0.4"
   },
   "dependencies": {
     "audioconcat": "^0.1.4",
-    "undici": "^5.8.0"
+    "undici": "^5.21.0"
   }
 }

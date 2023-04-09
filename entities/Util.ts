@@ -25,19 +25,14 @@ export class Util {
    * Gets the direct streaming link of a track.
    */
   public streamLink = async (songUrl: string) => {
-    const headers = this.api.headers
-    if (songUrl.includes("m.soundcloud.com")) songUrl = songUrl.replace("m.soundcloud.com", "soundcloud.com")
-    if (!songUrl.includes("soundcloud.com")) songUrl = `https://soundcloud.com/${songUrl}`
-    const html = await makeRequest(songUrl, {headers}).then((r) => r.text())
-    const json = JSON.parse(html.match(/(\[{)(.*)(?=;)/gm)[0])
-    const track = json[json.length - 1].data
+    const track = await this.tracks.getV2(songUrl)
 
-    //  const match = html.data.match(/(?<=,{"url":")(.*?)(progressive)/)?.[0]
     const match = track.media.transcodings.find(
       (t: any) => t.format.mime_type === "audio/mpeg" && t.format.protocol === "progressive"
     )?.url
     let url: string
     let client_id = await this.api.getClientID()
+    const headers = this.api.headers
     if (match) {
       let connect = match.includes("secret_token") ? `&client_id=${client_id}` : `?client_id=${client_id}`
       try {
@@ -62,11 +57,7 @@ export class Util {
    */
   private readonly m3uReadableStream = async (songUrl: string): Promise<NodeJS.ReadableStream> => {
     const headers = this.api.headers
-    if (songUrl.includes("m.soundcloud.com")) songUrl = songUrl.replace("m.soundcloud.com", "soundcloud.com")
-    if (!songUrl.includes("soundcloud.com")) songUrl = `https://soundcloud.com/${songUrl}`
-    const html = await makeRequest(songUrl, {headers}).then((r) => r.text())
-    const json = JSON.parse(html.match(/(\[{)(.*)(?=;)/gm)[0])
-    const track = json[json.length - 1].data
+    const track = await this.tracks.getV2(songUrl)
     const client_id = await this.api.getClientID()
     const match = track.media.transcodings.find(
       (t: any) => t.format.mime_type === "audio/mpeg" && t.format.protocol === "hls"

@@ -28,7 +28,7 @@ export class Util {
     const track = await this.tracks.getV2(songUrl)
 
     const match = track.media.transcodings.find(
-      (t: any) => t.format.mime_type === "audio/mpeg" && t.format.protocol === "progressive"
+      (t: any) => t.format.mime_type === "audio/mpeg" && (t.format.protocol === "progressive" || t.format.protocol === "hls")
     )?.url
     let url: string
     let client_id = await this.api.getClientID()
